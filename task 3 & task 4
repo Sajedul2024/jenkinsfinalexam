@@ -1,3 +1,32 @@
-http://13.127.16.124:8080/
-user name: tarafder
-password: tarafder
+
+
+###### Task 3
+pipeline {
+        agent any
+        parameters {
+            string(
+                name: "BUILD_VERSION",
+                defaultValue: "Build version "+java.time.LocalDateTime.now()
+                )
+            }
+            stages {
+                stage("Print") {
+                    steps {
+                        echo params.BUILD_VERSION
+                    }
+                }
+            }
+        }
+
+ sh'docker build --no-cache -t ${CLIENT_APP_IMAGE}:${BUILD_VERSION} .'   
+
+###### Task 4
+ git branch: 'main', url: "${GIT_REPO}"
+
+sh'docker build --no-cache -t ${CLIENT_APP_IMAGE}:${IMAGE_TAG} .' 
+
+sh'echo ${PASSWORD} | docker login --username ${USER_NAME} --password-stdin'
+
+sh'docker push ${CLIENT_APP_IMAGE}:${IMAGE_TAG}'
+                   
+sh'docker logout'
